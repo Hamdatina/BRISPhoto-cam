@@ -8,26 +8,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Ambil source code
         uses: actions/checkout@v4
 
-      - name: Extract project
+      - name: Ekstrak proyek
         run: |
-          mkdir project
-          ZIP=$(find . -maxdepth 1 -name "*.zip" -print -quit)
-          unzip -q "$ZIP" -d project
+          unzip -q BRISPhotoHelper-Android.zip
+          ls -la
+          ls -la BRISPhotoHelper
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: "8.7"
+          gradle-version: '8.7'
 
       - name: Build APK
-        working-directory: project
+        working-directory: BRISPhotoHelper
         run: gradle --no-daemon assembleDebug
 
-      - name: Upload APK
+      - name: Simpan APK
         uses: actions/upload-artifact@v4
         with:
           name: BRISPhotoHelper-APK
-          path: project/app/build/outputs/apk/debug/app-debug.apk
+          path: BRISPhotoHelper/app/build/outputs/apk/debug/app-debug.apk

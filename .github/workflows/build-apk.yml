@@ -1,0 +1,33 @@
+name: Build BRIS Photo Helper
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract project
+        run: |
+          mkdir project
+          ZIP=$(find . -maxdepth 1 -name "*.zip" -print -quit)
+          unzip -q "$ZIP" -d project
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.7"
+
+      - name: Build APK
+        working-directory: project
+        run: gradle --no-daemon assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: BRISPhotoHelper-APK
+          path: project/app/build/outputs/apk/debug/app-debug.apk
